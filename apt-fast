@@ -34,7 +34,7 @@ msg(){
 }
 
 # Search for known options and decide if root privileges are needed.
-root=1  # default value: we need root privileges
+root=0  # default value: we don't need root privileges
 option=
 for argument in "$@"; do
   case "$argument" in
@@ -46,14 +46,11 @@ for argument in "$@"; do
       ;;
     download)
       option="download"
-      root=0
       ;;
     source)
       option="source"
-      root=0
       ;;
     changelog | show)
-      root=0
       ;;
   esac
 done
@@ -113,7 +110,7 @@ fi
 # permissions.
 # We need lock for non-root commands too, because we only have one download
 # list file.
-LCK_FILE="/tmp/apt-fast"
+LCK_FILE="$PREFIX/tmp/apt-fast"
 LCK_FD=99
 
 # Set default package manager, APT cache, temporary download dir,
@@ -129,7 +126,7 @@ else
 fi
 # Currently not needed.
 eval "$(apt-config shell LISTDIR Dir::State::lists/d)"
-DLLIST="/tmp/apt-fast.list"
+DLLIST="$PREFIX/tmp/apt-fast.list"
 _MAXNUM=5
 _MAXCONPERSRV=10
 _SPLITCON=8
@@ -160,7 +157,7 @@ VERBOSE_OUTPUT=
 _DOWNLOADER='aria2c --no-conf -c -j ${_MAXNUM} -x ${_MAXCONPERSRV} -s ${_SPLITCON} -i ${DLLIST} --min-split-size=${_MINSPLITSZ} --stream-piece-selector=${_PIECEALGO} --connect-timeout=600 --timeout=600 -m0 --header "Accept: */*"'
 
 # Load config file.
-for Prefix in /usr/local/etc /etc; do
+for Prefix in $PREFIX/usr/local/etc $PREFIX/etc; do
     CONFFILE=${Prefix}/apt-fast.conf
     if [ -e "$CONFFILE" ]; then
         source "$CONFFILE"
