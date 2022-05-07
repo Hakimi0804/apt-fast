@@ -428,12 +428,15 @@ display_downloadfile(){
     #DISPLAY_SORT_OPTIONS=(-k 3,3 -hr)
     while read -r line; do
         [ -z "$line" ] && continue
-        pkg="$(echo "$line" | cut -d' ' -f1)"
-        ver="$(echo "$line" | cut -d' ' -f2)"
-        size="$(echo "$line" | cut -d' ' -f3)"
-        printf '%s%-40s %-20s %10s\n' "$aptfast_prefix" "$pkg" "$ver" "$size"
+        (
+        	pkg="$(echo "$line" | cut -d' ' -f1)"
+        	ver="$(echo "$line" | cut -d' ' -f2)"
+        	size="$(echo "$line" | cut -d' ' -f3)"
+        	printf '%s%-40s %-20s %10s\n' "$aptfast_prefix" "$pkg" "$ver" "$size"
+        ) &
     done <<<"$(echo -e "$DOWNLOAD_DISPLAY" | sort "${DISPLAY_SORT_OPTIONS[@]}")"
   fi
+  wait
   msg "Download size: $(echo "$DOWNLOAD_SIZE" | numfmt --to=iec-i --suffix=B)" "normal"
 }
 
